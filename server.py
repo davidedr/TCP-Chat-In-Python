@@ -16,9 +16,9 @@ def broadcast(message, sender = None):
     for client in clients:
         if sender:
             if client != sender:
-                client.send(message)
+                client.send(message.encode('ascii'))
         else:
-            client.send(message)
+            client.send(message.encode('ascii'))
 
 def handle(client):
     index = clients.index(client)
@@ -32,19 +32,19 @@ def handle(client):
             elif message.startswith("#quit"):
                 clients.remove(client)
                 client.close()
-                broadcast('{} left!'.format(nickname).encode('ascii'))
+                broadcast('{} left!'.format(nickname))
                 nicknames.remove(nickname)
                 print("{} left.".format(nickname))
                 break
             else:
-                broadcast("{}: {}".format(nickname, message).encode('ascii'), client)
+                broadcast("{}: {}".format(nickname, message), client)
 
         except Exception as e:
             print("handle: exception raised!", file = sys.stderr)
             print(e)
             clients.remove(client)
             client.close()
-            broadcast('{} left!'.format(nickname).encode('ascii'))
+            broadcast('{} left!'.format(nickname))
             nicknames.remove(nickname)
             print("{} left.".format(nickname))
             break
@@ -64,7 +64,7 @@ def receive():
 
         join_message = "{} joined.".format(nickname)
         print(join_message)
-        broadcast(join_message.encode('ascii'))
+        broadcast(join_message)
         client.send("{}: you're connected!".format(nickname).encode('ascii'))
 
         thread = threading.Thread(target = handle, args = (client, ))
